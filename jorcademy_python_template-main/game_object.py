@@ -56,7 +56,8 @@ class Bird(GameObject):
         self.y += self.velocity_y
 
     def ground_hit(self):
-        return (self.y + self.height / 2) >= SCREEN_HEIGHT
+        ground_y = 450
+        return (self.y + self.height / 2) >= ground_y
 
     def fall(self):
         if self.velocity_y < self.max_velocity_y:
@@ -88,10 +89,10 @@ class Pipe(GameObject):
         self.move()
 
 
-class Backdrop(GameObject):
-    def __init__(self, x, y, width, height, pathname):
+class StaticObject(GameObject):
+    def __init__(self, x, y, width, height, speed, pathname):
         super().__init__(x, y, width, height, pathname)
-        self.speed = 0.5
+        self.speed = speed
 
     def update(self):
         self.move()

@@ -8,7 +8,7 @@ SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 512
 
 # Game flags
-game_over = False 
+game_over = True 
 bird_hit_pipe = False
 
 # Game vars
@@ -23,13 +23,19 @@ diff_x_between_pipes = 300
 bird: Bird = Bird(400, 200, 34, 24, "sprites/bluebird-upflap.png")
 
 # Backdrops
-backdrops: list = [Backdrop(144, 256, 288, 512, "sprites/background-night.png"),
-                   Backdrop(288, 256, 288, 512, "sprites/background-night.png"),
-                   Backdrop(432, 256, 288, 512, "sprites/background-night.png"),
-                   Backdrop(576, 256, 288, 512, "sprites/background-night.png"),
-                   Backdrop(720, 256, 288, 512, "sprites/background-night.png"),
-                   Backdrop(864, 256, 288, 512, "sprites/background-night.png"),
-                   Backdrop(1008, 256, 288, 512, "sprites/background-night.png")] 
+backdrops: list = [StaticObject(144, 256, 288, 512, 0.5, "sprites/background-night.png"),
+                   StaticObject(288, 256, 288, 512, 0.5, "sprites/background-night.png"),
+                   StaticObject(432, 256, 288, 512, 0.5, "sprites/background-night.png"),
+                   StaticObject(576, 256, 288, 512, 0.5, "sprites/background-night.png"),
+                   StaticObject(720, 256, 288, 512, 0.5, "sprites/background-night.png"),
+                   StaticObject(864, 256, 288, 512, 0.5, "sprites/background-night.png"),
+                   StaticObject(1008, 256, 288, 512, 0.5, "sprites/background-night.png")] 
+
+# Grounds
+grounds: list = [StaticObject(0, 500, 337, 512, 3.5, "sprites/base.png"), 
+                 StaticObject(333, 500, 337, 512, 3.5, "sprites/base.png"),
+                 StaticObject(333*2, 500, 337, 512, 3.5, "sprites/base.png"),
+                 StaticObject(333*3, 500, 337, 512, 3.5, "sprites/base.png")]
 
 # Pipes
 pipes: list = [Pipe(600, 360, 52, 320, "sprites/pipe-green.png"), 
@@ -43,9 +49,12 @@ pipes: list = [Pipe(600, 360, 52, 320, "sprites/pipe-green.png"),
 # Sense that the bird has passed a pair of pipes
 def update_score():
     global score 
+    global bird_hit_pipe
+
     for pipe in pipes:
         if (pipe.x > SCREEN_WIDTH / 2 - 2) and \
-           (pipe.x < SCREEN_WIDTH / 2 + 2):
+           (pipe.x < SCREEN_WIDTH / 2 + 2) and \
+           not bird_hit_pipe:
             score += 1
             break
 
@@ -109,6 +118,10 @@ def update_game_objects():
         pipe.update()
     reset_pipe_heights()
 
+    # Update grounds
+    for ground in grounds:
+        ground.update()
+
     # Update bird
     bird.update()
     
@@ -123,10 +136,43 @@ def draw_game_objects():
     for pipe in pipes:
         pipe.draw()
 
+    # Draw grounds
+    for ground in grounds:
+        ground.draw()
+
     # Draw bird
     bird.draw()
 
 
+# Display UI of in-game state
+def display_game_ui():
+    global game_over
+
+    # Display score
+    display_score()
+
+    # Switch to menu when game over
+    if not game_over and bird.ground_hit():
+        sleep(1)
+        sleep(2000)
+        game_over = True
+
+
+# Display game menu
+def display_menu():
+    # Draw backdrops
+    for bd in backdrops:
+        bd.draw()
+
+    # Draw grounds
+    for ground in grounds:
+        ground.draw()
+
+    # Display menu message
+    image("sprites/message.png", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 1.2)
+
+
+# Display the score of the game
 def display_score():
     # Display score
     global score
@@ -137,24 +183,31 @@ def display_score():
     score_x = SCREEN_WIDTH / 2 + 10 - 10 * len(images)
     score_y = 40
     
-    
+    # Display score images
     for path in images:
         image(path, score_x, score_y, 1)
         score_x += 20
 
 
-# Game setup
-def setup() -> None:
-    # Screen settings
-    screen(SCREEN_WIDTH, SCREEN_HEIGHT)
-    title("Flappy Bird")
+# Create starting state of the game
+def init_game():
+    global bird_hit_pipe
+    global score 
 
-    # Setup game
+    # Reset bird
+    bird.x = 400
+    bird.y = 150
+
+    # Reset vars
+    score = 0
+    bird_hit_pipe = False
+
+    # Reset pipes
     init_pipes()
 
 
-# Game update
-def draw() -> None:
+# Run the game
+def play_game():
     # Update game score
     update_score()
 
@@ -173,5 +226,30 @@ def draw() -> None:
 
     # Draw the game objects
     draw_game_objects()
-    display_score()  
+    display_game_ui()
+
+
+# Game setup
+def setup() -> None:
+    # Screen settings
+    screen(SCREEN_WIDTH, SCREEN_HEIGHT)
+    title("Flappy Bird | JorCademy Engine")
+
+    # Setup game
+    init_game()
+
+
+# Game update
+def draw() -> None:
+    global game_over
+
+    # Determine game state
+    if game_over:
+        display_menu()
+    
+        if key_space_down:
+            init_game()
+            game_over = False
+    else:
+        play_game()
 
