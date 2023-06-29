@@ -4,17 +4,18 @@ from game_object import *
 # === VARIABLES === #
 
 # Constants
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 512
+SCREEN_WIDTH: int = 800
+SCREEN_HEIGHT: int = 512
 
 # Game flags
-game_over = True 
-bird_hit_pipe = False
+game_over: bool = True 
+bird_hit_pipe: bool = False
 
 # Game vars
-score = 0
-pipes_start_position = 1000
-diff_x_between_pipes = 300
+score: int = 0
+pipes_start_position: int = 1000
+diff_x_between_pipes: int = 300
+animation_speed: int = 10
 
 # Audio
 flap_sound = load_sound("assets/audio/wing.wav")
@@ -26,7 +27,8 @@ die_sound = load_sound("assets/audio/die.wav")
 # === GAME OBJECTS === #
 
 # Bird
-bird: Bird = Bird(400, 200, 34, 24, "sprites/bluebird-upflap.png")
+bird: Bird = Bird(400, 200, 34, 24, \
+                  ["sprites/bluebird-upflap.png", "sprites/bluebird-downflap.png"])
 
 # Backdrops
 backdrops: list = [StaticObject(144, 256, 288, 512, 0.5, "sprites/background-night.png"),
@@ -53,7 +55,7 @@ pipes: list = [Pipe(600, 360, 52, 320, "sprites/pipe-green.png"),
 
 
 # Sense that the bird has passed a pair of pipes
-def update_score():
+def update_score() -> None:
     global score 
     global bird_hit_pipe
 
@@ -66,7 +68,7 @@ def update_score():
             break
 
 # Make pipe reset position when out of frame
-def reset_pipe_heights():
+def reset_pipe_heights() -> None:
     space_between_pipes: int = 440
 
     for i in range(3):
@@ -86,7 +88,7 @@ def reset_pipe_heights():
 
 
 # Initialize pipe positions at game start
-def init_pipes():
+def init_pipes() -> None:
     for i in range(3):
        # Fetch pair of pipes
        pipe1 = pipes[i * 2]
@@ -98,7 +100,7 @@ def init_pipes():
 
 
 # Check collision of bird with pipes
-def observe_collision():
+def observe_collision() -> None:
     global bird_hit_pipe
 
     for pipe in pipes:
@@ -110,7 +112,7 @@ def observe_collision():
 
 
 # Handle user input
-def user_control():
+def user_control() -> None:
     if key_space_down:
         bird.flap()
         play_sound(flap_sound, 0)
@@ -119,7 +121,7 @@ def user_control():
 
 
 # Update objects
-def update_game_objects():
+def update_game_objects() -> None:
     # Update pipes
     for bd in backdrops:
         bd.update()
@@ -138,7 +140,7 @@ def update_game_objects():
     
 
 # Draw objects
-def draw_game_objects():
+def draw_game_objects() -> None:
     # Draw backdrops
     for bd in backdrops:
         bd.draw()
@@ -156,7 +158,7 @@ def draw_game_objects():
 
 
 # Display UI of in-game state
-def display_game_ui():
+def display_game_ui() -> None:
     global game_over
 
     # Display score
@@ -170,7 +172,7 @@ def display_game_ui():
 
 
 # Display game menu
-def display_menu():
+def display_menu() -> None:
     # Draw backdrops
     for bd in backdrops:
         bd.draw()
@@ -184,7 +186,7 @@ def display_menu():
 
 
 # Display the score of the game
-def display_score():
+def display_score() -> None:
     # Display score
     global score
     digits = [i for i in str(score)]
@@ -201,7 +203,7 @@ def display_score():
 
 
 # Create starting state of the game
-def init_game():
+def init_game() -> None:
     global bird_hit_pipe
     global score 
 
@@ -218,7 +220,7 @@ def init_game():
 
 
 # Run the game
-def play_game():
+def play_game() -> None:
     # Update game score
     update_score()
 

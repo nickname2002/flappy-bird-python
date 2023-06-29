@@ -2,9 +2,9 @@ from jorcademy import *
 import random
 
 # Constants
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 512
-GRAVITY = 0.981
+SCREEN_WIDTH: int = 800
+SCREEN_HEIGHT: int = 512
+GRAVITY: float = 0.981
 
 
 class GameObject:
@@ -45,11 +45,14 @@ class GameObject:
 
 class Bird(GameObject):
     def __init__(self, x, y, width, height, pathname):
+        super().__init__(x, y, width, height, pathname)
         self.velocity_y = 0.5
         self.speed = 1
         self.min_velocity_y = -3
         self.max_velocity_y = 4
-        super().__init__(x, y, width, height, pathname)
+        self.timer = 0
+        self.animation_length = 10
+        self.selected_sprite = pathname[0]
 
     # Change position based on velocity
     def move(self):
@@ -67,7 +70,19 @@ class Bird(GameObject):
         if self.velocity_y > self.min_velocity_y:
             self.velocity_y -= 2 * self.speed
 
+    def draw(self):
+        # Handle animations
+        if self.timer % 10 == 0:
+            if self.selected_sprite == self.pathname[0]:
+                self.selected_sprite = self.pathname[1]
+            elif self.selected_sprite == self.pathname[1]:
+                self.selected_sprite = self.pathname[0]
+
+        # Display image
+        image(self.selected_sprite, self.x, self.y, 1)
+
     def update(self):
+        self.timer += 1
         if not self.ground_hit():
             self.move()
 
