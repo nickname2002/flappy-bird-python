@@ -16,6 +16,12 @@ score = 0
 pipes_start_position = 1000
 diff_x_between_pipes = 300
 
+# Audio
+flap_sound = load_sound("assets/audio/wing.wav")
+score_sound = load_sound("assets/audio/point.wav")
+hit_sound = load_sound("assets/audio/hit.wav")
+die_sound = load_sound("assets/audio/die.wav")
+
 
 # === GAME OBJECTS === #
 
@@ -56,6 +62,7 @@ def update_score():
            (pipe.x < SCREEN_WIDTH / 2 + 2) and \
            not bird_hit_pipe:
             score += 1
+            play_sound(score_sound, 1)
             break
 
 # Make pipe reset position when out of frame
@@ -95,7 +102,10 @@ def observe_collision():
     global bird_hit_pipe
 
     for pipe in pipes:
-        if bird.collision_detected(pipe):
+        if bird.collision_detected(pipe) \
+        and not bird_hit_pipe:
+            play_sound(hit_sound, 2)
+            play_sound(die_sound, 3)
             bird_hit_pipe = True
 
 
@@ -103,6 +113,7 @@ def observe_collision():
 def user_control():
     if key_space_down:
         bird.flap()
+        play_sound(flap_sound, 0)
     else:
         bird.fall()
 
