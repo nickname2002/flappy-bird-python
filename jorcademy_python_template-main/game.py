@@ -184,6 +184,9 @@ def display_menu() -> None:
     # Display menu message
     image("sprites/message.png", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 1.2)
 
+    # Display JorCademy icon
+    image("jc_icon.png", 50, 50, 0.1)
+
 
 # Display the score of the game
 def display_score() -> None:
