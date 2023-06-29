@@ -1,12 +1,24 @@
 from jorcademy import *
 from game_object import *
 
-# === CONSTANTS === #
+# === VARIABLES === #
+
+# Constants
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 512
 
+# Game flags
+game_over = False 
+bird_hit_pipe = False
+
+# Game vars
+score = 0
+pipes_start_position = 1000
+diff_x_between_pipes = 300
+
 
 # === GAME OBJECTS === #
+
 # Bird
 bird: Bird = Bird(400, 200, 34, 24, "sprites/bluebird-upflap.png")
 
@@ -28,8 +40,17 @@ pipes: list = [Pipe(600, 360, 52, 320, "sprites/pipe-green.png"),
                Pipe(0, -90, 52, 320, "sprites/pipe-green-rotated.png")]
 
 
+# Sense that the bird has passed a pair of pipes
+def update_score():
+    global score 
+    for pipe in pipes:
+        if (pipe.x > SCREEN_WIDTH / 2 - 2) and \
+           (pipe.x < SCREEN_WIDTH / 2 + 2):
+            score += 1
+            break
+
 # Make pipe reset position when out of frame
-def reset_pipe_positions():
+def reset_pipe_heights():
     space_between_pipes: int = 440
 
     for i in range(3):
@@ -48,8 +69,29 @@ def reset_pipe_positions():
            pipe2.place_right_of_frame()
 
 
+# Initialize pipe positions at game start
+def init_pipes():
+    for i in range(3):
+       # Fetch pair of pipes
+       pipe1 = pipes[i * 2]
+       pipe2 = pipes[i * 2 + 1]
+
+       # Set start position
+       pipe1.x = pipes_start_position + 300 * i
+       pipe2.x = pipe1.x
+
+
+# Check collision of bird with pipes
+def observe_collision():
+    global bird_hit_pipe
+
+    for pipe in pipes:
+        if bird.collision_detected(pipe):
+            bird_hit_pipe = True
+
+
 # Handle user input
-def user_input():
+def user_control():
     if key_space_down:
         bird.flap()
     else:
@@ -65,7 +107,7 @@ def update_game_objects():
     # Update pipes
     for pipe in pipes:
         pipe.update()
-    reset_pipe_positions()
+    reset_pipe_heights()
 
     # Update bird
     bird.update()
@@ -85,16 +127,51 @@ def draw_game_objects():
     bird.draw()
 
 
+def display_score():
+    # Display score
+    global score
+    digits = [i for i in str(score)]
+    images = [f"sprites/{digit}.png" for digit in digits]
+
+    # Get score coordinates
+    score_x = SCREEN_WIDTH / 2 + 10 - 10 * len(images)
+    score_y = 40
+    
+    
+    for path in images:
+        image(path, score_x, score_y, 1)
+        score_x += 20
+
+
 # Game setup
 def setup() -> None:
+    # Screen settings
     screen(SCREEN_WIDTH, SCREEN_HEIGHT)
-    backdrop((255, 255, 255))
     title("Flappy Bird")
+
+    # Setup game
+    init_pipes()
 
 
 # Game update
 def draw() -> None:
-    user_input()
-    update_game_objects()
+    # Update game score
+    update_score()
+
+    # Check for collision
+    observe_collision()
+
+    # Allow bird control until collision
+    if not bird_hit_pipe:
+        user_control()
+    else:
+        bird.fall()
+
+    # Update game objects state
+    if not bird.ground_hit():
+        update_game_objects()      
+
+    # Draw the game objects
     draw_game_objects()
+    display_score()  
 

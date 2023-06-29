@@ -1,7 +1,7 @@
 from jorcademy import *
 import random
 
-# CONSTANTS
+# Constants
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 512
 GRAVITY = 0.981
@@ -35,6 +35,13 @@ class GameObject:
     def draw(self):
         image(self.pathname, self.x, self.y, 1)
 
+    def collision_detected(self, other):
+        in_x_range = (self.x + self.width / 2) > (other.x - other.width / 2) and \
+                     (self.x - self.width / 2) < (other.x + other.width / 2)
+        in_y_range = (self.y + self.height / 2) > (other.y - other.height / 2) and \
+                     (self.y - self.height / 2) < (other.y + other.height / 2)
+        return in_x_range and in_y_range
+
 
 class Bird(GameObject):
     def __init__(self, x, y, width, height, pathname):
@@ -60,7 +67,6 @@ class Bird(GameObject):
             self.velocity_y -= 2 * self.speed
 
     def update(self):
-        print(self.ground_hit())
         if not self.ground_hit():
             self.move()
 
