@@ -8,7 +8,7 @@ SCREEN_WIDTH: int = 800
 SCREEN_HEIGHT: int = 512
 
 # Game flags
-game_over: bool = True 
+game_over: bool = True
 bird_hit_pipe: bool = False
 
 # Game vars
@@ -23,12 +23,11 @@ score_sound = load_sound("assets/audio/point.wav")
 hit_sound = load_sound("assets/audio/hit.wav")
 die_sound = load_sound("assets/audio/die.wav")
 
-
 # === GAME OBJECTS === #
 
 # Bird
-bird: Bird = Bird(400, 200, 34, 24, \
-                  ["sprites/bluebird-upflap.png", "sprites/bluebird-downflap.png"])
+bird: Bird = Bird(400, 200, 34, 24,
+                  ["sprites/bluebird-upflap.png", "sprites/bluebird-downflap.png"], 15)
 
 # Backdrops
 backdrops: list = [StaticObject(144, 256, 288, 512, 0.5, "sprites/background-night.png"),
@@ -37,66 +36,67 @@ backdrops: list = [StaticObject(144, 256, 288, 512, 0.5, "sprites/background-nig
                    StaticObject(576, 256, 288, 512, 0.5, "sprites/background-night.png"),
                    StaticObject(720, 256, 288, 512, 0.5, "sprites/background-night.png"),
                    StaticObject(864, 256, 288, 512, 0.5, "sprites/background-night.png"),
-                   StaticObject(1008, 256, 288, 512, 0.5, "sprites/background-night.png")] 
+                   StaticObject(1008, 256, 288, 512, 0.5, "sprites/background-night.png")]
 
 # Grounds
-grounds: list = [StaticObject(0, 500, 337, 512, 3.5, "sprites/base.png"), 
+grounds: list = [StaticObject(0, 500, 337, 512, 3.5, "sprites/base.png"),
                  StaticObject(333, 500, 337, 512, 3.5, "sprites/base.png"),
-                 StaticObject(333*2, 500, 337, 512, 3.5, "sprites/base.png"),
-                 StaticObject(333*3, 500, 337, 512, 3.5, "sprites/base.png")]
+                 StaticObject(333 * 2, 500, 337, 512, 3.5, "sprites/base.png"),
+                 StaticObject(333 * 3, 500, 337, 512, 3.5, "sprites/base.png")]
 
 # Pipes
-pipes: list = [Pipe(600, 360, 52, 320, "sprites/pipe-green.png"), 
+pipes: list = [Pipe(600, 360, 52, 320, "sprites/pipe-green.png"),
                Pipe(600, -90, 52, 320, "sprites/pipe-green-rotated.png"),
-               Pipe(300, 360, 52, 320, "sprites/pipe-green.png"), 
+               Pipe(300, 360, 52, 320, "sprites/pipe-green.png"),
                Pipe(300, -90, 52, 320, "sprites/pipe-green-rotated.png"),
-               Pipe(0, 360, 52, 320, "sprites/pipe-green.png"), 
+               Pipe(0, 360, 52, 320, "sprites/pipe-green.png"),
                Pipe(0, -90, 52, 320, "sprites/pipe-green-rotated.png")]
 
 
 # Sense that the bird has passed a pair of pipes
 def update_score() -> None:
-    global score 
+    global score
     global bird_hit_pipe
 
     for pipe in pipes:
         if (pipe.x > SCREEN_WIDTH / 2 - 2) and \
-           (pipe.x < SCREEN_WIDTH / 2 + 2) and \
-           not bird_hit_pipe:
+                (pipe.x < SCREEN_WIDTH / 2 + 2) and \
+                not bird_hit_pipe:
             score += 1
             play_sound(score_sound, 1)
             break
+
 
 # Make pipe reset position when out of frame
 def reset_pipe_heights() -> None:
     space_between_pipes: int = 440
 
     for i in range(3):
-       # Fetch pair of pipes
-       pipe1 = pipes[i * 2]
-       pipe2 = pipes[i * 2 + 1]
+        # Fetch a pair of pipes
+        pipe1 = pipes[i * 2]
+        pipe2 = pipes[i * 2 + 1]
 
-       # Update pipe positions when out of frame
-       if pipe1.out_of_frame():
-           # Generate random y position
-           pipe1.reset_pipe_position()
-           pipe2.y = pipe1.y - space_between_pipes
+        # Update pipe positions when out of frame
+        if pipe1.out_of_frame():
+            # Generate random y position
+            pipe1.reset_pipe_position()
+            pipe2.y = pipe1.y - space_between_pipes
 
-           # Place pipes at the right side of frame
-           pipe1.place_right_of_frame()
-           pipe2.place_right_of_frame()
+            # Place pipes on the right side of frame
+            pipe1.place_right_of_frame()
+            pipe2.place_right_of_frame()
 
 
 # Initialize pipe positions at game start
 def init_pipes() -> None:
     for i in range(3):
-       # Fetch pair of pipes
-       pipe1 = pipes[i * 2]
-       pipe2 = pipes[i * 2 + 1]
+        # Fetch a pair of pipes
+        pipe1 = pipes[i * 2]
+        pipe2 = pipes[i * 2 + 1]
 
-       # Set start position
-       pipe1.x = pipes_start_position + 300 * i
-       pipe2.x = pipe1.x
+        # Set start position
+        pipe1.x = pipes_start_position + 300 * i
+        pipe2.x = pipe1.x
 
 
 # Check collision of bird with pipes
@@ -105,7 +105,7 @@ def observe_collision() -> None:
 
     for pipe in pipes:
         if bird.collision_detected(pipe) \
-        and not bird_hit_pipe:
+                and not bird_hit_pipe:
             play_sound(hit_sound, 2)
             play_sound(die_sound, 3)
             bird_hit_pipe = True
@@ -125,7 +125,7 @@ def update_game_objects() -> None:
     # Update pipes
     for bd in backdrops:
         bd.update()
-    
+
     # Update pipes
     for pipe in pipes:
         pipe.update()
@@ -137,7 +137,7 @@ def update_game_objects() -> None:
 
     # Update bird
     bird.update()
-    
+
 
 # Draw objects
 def draw_game_objects() -> None:
@@ -198,7 +198,7 @@ def display_score() -> None:
     # Get score coordinates
     score_x = SCREEN_WIDTH / 2 + 10 - 10 * len(images)
     score_y = 40
-    
+
     # Display score images
     for path in images:
         image(path, score_x, score_y, 1)
@@ -208,7 +208,7 @@ def display_score() -> None:
 # Create starting state of the game
 def init_game() -> None:
     global bird_hit_pipe
-    global score 
+    global score
 
     # Reset bird
     bird.x = 400
@@ -238,9 +238,9 @@ def play_game() -> None:
 
     # Update game objects state
     if not bird.ground_hit():
-        update_game_objects()      
+        update_game_objects()
 
-    # Draw the game objects
+        # Draw the game objects
     draw_game_objects()
     display_game_ui()
 
@@ -262,10 +262,9 @@ def draw() -> None:
     # Determine game state
     if game_over:
         display_menu()
-    
+
         if key_space_down:
             init_game()
             game_over = False
     else:
         play_game()
-

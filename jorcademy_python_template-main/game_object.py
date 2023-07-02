@@ -12,7 +12,7 @@ class GameObject:
         self.x = x
         self.y = y
         self.pathname = pathname
-        self.width = width 
+        self.width = width
         self.height = height
         self.speed = 1
 
@@ -20,17 +20,17 @@ class GameObject:
         self.x -= self.speed
 
         # Reset position when out of screen
-        if self.out_of_frame(): 
+        if self.out_of_frame():
             self.place_right_of_frame()
-            
+
     def place_right_of_frame(self):
         self.x = 800 + self.width / 2
-    
+
     def out_of_frame(self):
-        return self.x + 1/2 * self.width < 0
+        return self.x + 1 / 2 * self.width < 0
 
     def update(self):
-        pass 
+        pass
 
     def draw(self):
         image(self.pathname, self.x, self.y, 1)
@@ -44,7 +44,7 @@ class GameObject:
 
 
 class Bird(GameObject):
-    def __init__(self, x, y, width, height, pathname):
+    def __init__(self, x, y, width, height, pathname, rotation):
         super().__init__(x, y, width, height, pathname)
         self.velocity_y = 0.5
         self.speed = 1
@@ -53,6 +53,7 @@ class Bird(GameObject):
         self.timer = 0
         self.animation_length = 10
         self.selected_sprite = pathname[0]
+        self.rotation = rotation
 
     # Change position based on velocity
     def move(self):
@@ -63,10 +64,12 @@ class Bird(GameObject):
         return (self.y + self.height / 2) >= ground_y
 
     def fall(self):
+        self.rotation -= 2
         if self.velocity_y < self.max_velocity_y:
             self.velocity_y += GRAVITY * self.speed
 
     def flap(self):
+        self.rotation = 20
         if self.velocity_y > self.min_velocity_y:
             self.velocity_y -= 2 * self.speed
 
@@ -78,8 +81,11 @@ class Bird(GameObject):
             elif self.selected_sprite == self.pathname[1]:
                 self.selected_sprite = self.pathname[0]
 
+        if self.rotation < -35:
+            self.rotation = -35
+
         # Display image
-        image(self.selected_sprite, self.x, self.y, 1)
+        image(self.selected_sprite, self.x, self.y, 1, self.rotation)
 
     def update(self):
         self.timer += 1
