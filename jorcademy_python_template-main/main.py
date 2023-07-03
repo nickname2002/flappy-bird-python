@@ -2,6 +2,8 @@ import pygame
 from pygame.locals import *
 import game
 import jorcademy as jc
+import asyncio
+
 
 # Init user setup
 game.setup()
@@ -41,9 +43,9 @@ def handle_arrow_keys_down(game_event: pygame.event) -> None:
     elif game_event.key == K_RIGHT:
         game.key_right_down = True
     elif game_event.key == K_DOWN:
-        game.key_down_down = True 
+        game.key_down_down = True
     elif game_event.key == K_UP:
-        game.key_up_down = True 
+        game.key_up_down = True
 
 
 def handle_arrow_keys_up(game_event: pygame.event) -> None:
@@ -52,9 +54,9 @@ def handle_arrow_keys_up(game_event: pygame.event) -> None:
     elif game_event.key == K_RIGHT:
         game.key_right_down = False
     elif game_event.key == K_DOWN:
-        game.key_down_down = False 
+        game.key_down_down = False
     elif game_event.key == K_UP:
-        game.key_up_down = False 
+        game.key_up_down = False
 
 
 def handle_wasd_keys_down(game_event: pygame.event) -> None:
@@ -63,7 +65,7 @@ def handle_wasd_keys_down(game_event: pygame.event) -> None:
     elif game_event.key == K_a:
         game.key_a_down = True
     elif game_event.key == K_s:
-        game.key_s_down = True 
+        game.key_s_down = True
     elif game_event.key == K_d:
         game.key_d_down = True
 
@@ -74,46 +76,53 @@ def handle_wasd_keys_up(game_event: pygame.event) -> None:
     elif game_event.key == K_a:
         game.key_a_down = False
     elif game_event.key == K_s:
-        game.key_s_down = False 
+        game.key_s_down = False
     elif game_event.key == K_d:
         game.key_d_down = False
 
 
-# Game loop
-while running:
-    # poll for events
-    # pygame.QUIT event means the user clicked X to close your window
-    for event in pygame.event.get():
+async def main():
+    global running
 
-        # Keyboard - DOWN
-        if event.type == KEYDOWN:
-            handle_special_keys_down(event)
-            handle_wasd_keys_down(event) 
-            handle_arrow_keys_down(event)
+    # Game loop
+    while running:
+        # poll for events
+        # pygame.QUIT event means the user clicked X to close your window
+        for event in pygame.event.get():
 
-        # Keyboard - UP
-        if event.type == KEYUP:
-            handle_special_keys_up(event)
-            handle_wasd_keys_up(event)
-            handle_arrow_keys_up(event) 
+            # Keyboard - DOWN
+            if event.type == KEYDOWN:
+                handle_special_keys_down(event)
+                handle_wasd_keys_down(event)
+                handle_arrow_keys_down(event)
 
-        # Quit game
-        if event.type == pygame.QUIT:
-            running = False
+            # Keyboard - UP
+            if event.type == KEYUP:
+                handle_special_keys_up(event)
+                handle_wasd_keys_up(event)
+                handle_arrow_keys_up(event)
 
-    # fill the screen with a color to wipe away anything from last frame
-    pygame.display.set_caption(jc.screen_title)
-    screen.fill(jc.background_color)
+            # Quit game
+            if event.type == pygame.QUIT:
+                running = False
 
-    # Render game
-    game.update()
-    render_objects_on_screen()
+        # fill the screen with a color to wipe away anything from last frame
+        pygame.display.set_caption(jc.screen_title)
+        screen.fill(jc.background_color)
 
-    # flip() the display to put your work on screen
-    pygame.display.flip()
-    jc.draw_buffer.clear()
+        # Render game
+        game.update()
+        render_objects_on_screen()
 
-    clock.tick(60)  # limits FPS to 60
+        # flip() the display to put your work on screen
+        pygame.display.flip()
+        jc.draw_buffer.clear()
 
+        clock.tick(60)  # limits FPS to 60
 
-pygame.quit()
+    await asyncio.sleep(0)
+    if not running:
+        pygame.quit()
+        return
+
+asyncio.run(main())
