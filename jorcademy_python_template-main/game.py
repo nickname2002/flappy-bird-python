@@ -201,7 +201,7 @@ def display_menu() -> None:
          "fonts/flappy_bird_font.ttf")
 
     # Display JorCademy icon
-    image("jc_icon.png", 50, 50, 0.1)
+    image("icons/jc_icon.png", 50, 50, 0.1)
 
 
 # Display the score of the game
