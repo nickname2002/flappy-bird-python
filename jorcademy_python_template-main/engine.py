@@ -106,7 +106,7 @@ while running:
     screen.fill(jc.background_color)
 
     # Render game
-    game.draw()
+    game.update()
     render_objects_on_screen()
 
     # flip() the display to put your work on screen

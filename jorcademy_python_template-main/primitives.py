@@ -54,12 +54,14 @@ class Rectangle(DrawableObject):
 
 # Derived class - representing a text object
 class Text(DrawableObject):
-    def __init__(self, content, surface, color, x, y, w, h):
+    def __init__(self, content, surface, color, x, y, w, h, size, font):
         super().__init__(x, y, w, h)
         self.object_name = "Text"
         self.color = color
         self.contents = content
         self.surface = surface
+        self.size = size
+        self.font = font
 
     def draw(self, context: pygame.display):
         # Set the position of the text

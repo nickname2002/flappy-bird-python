@@ -73,13 +73,17 @@ class Bird(GameObject):
         if self.velocity_y > self.min_velocity_y:
             self.velocity_y -= 2 * self.speed
 
-    def draw(self):
-        # Handle animations
-        if self.timer % 10 == 0:
+    def handle_animations(self):
+        if not self.ground_hit() and self.timer % 10 == 0:
             if self.selected_sprite == self.pathname[0]:
                 self.selected_sprite = self.pathname[1]
             elif self.selected_sprite == self.pathname[1]:
                 self.selected_sprite = self.pathname[0]
+
+    def draw(self):
+        # Handle animations
+        if not self.ground_hit():
+            self.handle_animations()
 
         if self.rotation < -35:
             self.rotation = -35

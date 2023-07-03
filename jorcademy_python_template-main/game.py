@@ -166,9 +166,19 @@ def display_game_ui() -> None:
 
     # Switch to menu when game over
     if not game_over and bird.ground_hit():
-        sleep(1)
-        sleep(2000)
-        game_over = True
+        if key_up_down:
+            game_over = True
+        else:
+            image("sprites/gameover.png", 
+                  SCREEN_WIDTH / 2, 
+                  SCREEN_HEIGHT / 2 - 50, 
+                  2)
+            text("PRESS UP TO CONTINUE", 
+                 52,
+                 (255, 255, 255),
+                 SCREEN_WIDTH / 2,
+                 SCREEN_HEIGHT / 2 + 30,
+                 "fonts/flappy_bird_font.ttf")
 
 
 # Display game menu
@@ -182,7 +192,13 @@ def display_menu() -> None:
         ground.draw()
 
     # Display menu message
-    image("sprites/message.png", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 1.2)
+    image("sprites/message.png", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 30, 1)
+    text("PRESS SPACE TO START", 
+         50, 
+         (255, 255, 255), 
+         SCREEN_WIDTH / 2, 
+         SCREEN_HEIGHT / 4 * 3 + 30, 
+         "fonts/flappy_bird_font.ttf")
 
     # Display JorCademy icon
     image("jc_icon.png", 50, 50, 0.1)
@@ -231,7 +247,7 @@ def play_game() -> None:
     observe_collision()
 
     # Allow bird control until collision
-    if not bird_hit_pipe:
+    if not bird_hit_pipe and not bird.ground_hit():
         user_control()
     else:
         bird.fall()
@@ -256,7 +272,7 @@ def setup() -> None:
 
 
 # Game update
-def draw() -> None:
+def update() -> None:
     global game_over
 
     # Determine game state
