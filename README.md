@@ -4,13 +4,21 @@
 The legendary mobile game, Flappy Bird, created using the JorCademy Engine. The purpose of this project was to test the capabilities of the template to create functional games. 
 
 ## Controls
-The only button needed to play the game is `space`.
+Press `space` to start the game and control the bird. 
+When Game Over, press `up_arrow` to return to the starting menu. 
 
 ## Running the project
 In order to run the program, installation of the Pygame library is required. Pygame can be installed using Python's package manager: pip. Use the following terminal command:
 ```
 pip install pygame
 ```
+If this command does not work, try `pip3` instead of `pip`.
+To run the project, run the following command in the terminal on macOS/Linux:
+```
+python3 jorcademy_python_template-main/main.py
+```
+When on Windows, try the command above without `python3`.
+
 ## Maintainability
 As the development of this game was just to test the capabilities of the JorCademy Engine, the application will not be developed any further. 
 
