@@ -13,9 +13,14 @@ In order to run the program, installation of the Pygame library is required. Pyg
 pip install pygame
 ```
 If this command does not work, try `pip3` instead of `pip`.
-To run the project, run the following command in the terminal on macOS/Linux:
+
+To run the project, first change the directory to the subfolder using the following terminal command:
 ```
-python3 jorcademy_python_template-main/main.py
+cd jorcademy_python_template.main
+```
+To run the game, enter the following command in the terminal on macOS/Linux:
+```
+python3 main.py
 ```
 When on Windows, try the command above without `python3`.
 
