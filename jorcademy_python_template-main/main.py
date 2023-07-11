@@ -2,10 +2,8 @@ import pygame
 from pygame.locals import *
 import game
 import jorcademy as jc
+import asyncio
 
-# Set app icon
-pygame_icon = pygame.image.load('./assets/icons/jc_icon.png')
-pygame.display.set_icon(pygame_icon)
 
 # Init user setup
 game.setup()
@@ -16,6 +14,10 @@ screen = pygame.display.set_mode(jc.screen_size)
 clock = pygame.time.Clock()
 running = True
 
+# Set app icon
+pygame_icon = pygame.image.load('assets/icons/jc_icon.png')
+pygame.display.set_icon(pygame_icon)
+
 
 # Render objects in draw buffer
 def render_objects_on_screen() -> None:
@@ -24,20 +26,6 @@ def render_objects_on_screen() -> None:
 
 
 # === Keyboard input === #
-
-def handle_keyboard_events(event_args: pygame.event):
-    # Keyboard - DOWN
-    if event_args.type == KEYDOWN:
-        handle_special_keys_down(event_args)
-        handle_wasd_keys_down(event_args)
-        handle_arrow_keys_down(event_args)
-
-    # Keyboard - UP
-    if event_args.type == KEYUP:
-        handle_special_keys_up(event_args)
-        handle_wasd_keys_up(event_args)
-        handle_arrow_keys_up(event_args)
-
 
 def handle_special_keys_down(game_event: pygame.event) -> None:
     if game_event.key == K_SPACE:
@@ -93,62 +81,48 @@ def handle_wasd_keys_up(game_event: pygame.event) -> None:
         game.key_d_down = False
 
 
-# ==== Mouse input ==== #
+async def main():
+    global running
 
-def handle_mouse_input(event_args: pygame.event):
-    # Mouse - DOWN
-    if event_args.type == MOUSEBUTTONDOWN:
-        if event_args.button == 1:
-            game.mouse_left_down = True
-        elif event_args.button == 2:
-            game.mouse_right_down = True
+    # Game loop
+    while running:
+        # poll for events
+        # pygame.QUIT event means the user clicked X to close your window
+        for event in pygame.event.get():
 
-    # Mouse - UP
-    if event_args.type == MOUSEBUTTONUP:
-        if event_args.button == 1:
-            game.mouse_left_down = False
-        elif event_args.button == 2:
-            game.mouse_right_down = False
+            # Keyboard - DOWN
+            if event.type == KEYDOWN:
+                handle_special_keys_down(event)
+                handle_wasd_keys_down(event)
+                handle_arrow_keys_down(event)
 
-    # Mouse - WHEEL
-    if event_args.type == MOUSEWHEEL:
-        if event_args.y > 0:
-            game.scroll_up = True
-        elif event_args.y < 0:
-            game.scroll_down = True
+            # Keyboard - UP
+            if event.type == KEYUP:
+                handle_special_keys_up(event)
+                handle_wasd_keys_up(event)
+                handle_arrow_keys_up(event)
 
-    # Mouse - MOTION
-    if event_args.type == MOUSEMOTION:
-        game.mouse_position = event_args.pos
+            # Quit game
+            if event.type == pygame.QUIT:
+                running = False
 
+        # fill the screen with a color to wipe away anything from last frame
+        pygame.display.set_caption(jc.screen_title)
+        screen.fill(jc.background_color)
 
-# Game loop
-while running:
-    game.scroll_down = False
-    game.scroll_up = False
+        # Render game
+        game.update()
+        render_objects_on_screen()
 
-    # poll for events
-    # pygame.QUIT event means the user clicked X to close your window
-    for event in pygame.event.get():
-        handle_keyboard_events(event)
-        handle_mouse_input(event)
+        # flip() the display to put your work on screen
+        pygame.display.flip()
+        jc.draw_buffer.clear()
 
-        # Quit game
-        if event.type == pygame.QUIT:
-            running = False
+        clock.tick(60)  # limits FPS to 60
 
-    # fill the screen with a color to wipe away anything from last frame
-    pygame.display.set_caption(jc.screen_title)
-    screen.fill(jc.background_color)
+        await asyncio.sleep(0)
+        if not running:
+            pygame.quit()
+            return
 
-    # Render game
-    game.update()
-    render_objects_on_screen()
-
-    # flip() the display to put your work on screen
-    pygame.display.flip()
-    jc.draw_buffer.clear()
-
-    clock.tick(60)  # limits FPS to 60
-
-pygame.quit()
+asyncio.run(main())
